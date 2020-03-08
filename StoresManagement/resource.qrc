@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>img/ntu-logo.jpg</file>
+        <file>img/search.png</file>
+        <file>img/ntu-logo-cropped.jpg</file>
+    </qresource>
+</RCC>

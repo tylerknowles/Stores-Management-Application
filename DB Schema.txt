@@ -1,0 +1,50 @@
+CREATE TABLE IF NOT EXISTS Departments (
+                      ChargeCode TEXT NOT NULL CHECK(length(ChargeCode) <= 3) PRIMARY KEY,
+                      Department TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS UserTypes (
+                      TypeID INT NOT NULL PRIMARY KEY,
+                      Description TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS AmendTypes (
+                      TypeID INT NOT NULL PRIMARY KEY,
+                      TypeDescription TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS Product (
+                      ProdCode TEXT NOT NULL CHECK(length(ProdCode) <= 8) PRIMARY KEY,
+                      ProdDesc TEXT NOT NULL,
+                      CaseQuantity INT NOT NULL,
+                      UnitPrice DECIMAL NOT NULL,
+                      StockLevel INT NOT NULL,
+                      LowStockLevel INT NOT NULL,
+                      VATPercent INT NOT NULL);
+CREATE TABLE IF NOT EXISTS StockHistory (
+                      AmendmentID INT NOT NULL PRIMARY KEY,
+                      ProdCode TEXT NOT NULL,
+                      AmendType INT NOT NULL,
+                      Quantity INT NOT NULL,
+                      AmendDate TEXT NOT NULL CHECK (AmendDate is strftime('%Y-%m-%d %H:%M:%S', AmendDate)),
+                      FOREIGN KEY (ProdCode) REFERENCES Product(ProdCode),
+                      FOREIGN KEY (AmendType) REFERENCES AmendTypes(TypeID));
+CREATE TABLE IF NOT EXISTS Users (
+                      Username TEXT NOT NULL PRIMARY KEY,
+                      Password TEXT NOT NULL,
+                      Forename TEXT NOT NULL,
+                      Surname TEXT NOT NULL,
+                      Email TEXT NOT NULL CHECK (instr(Email,'@')),
+                      ChargeCode TEXT,
+                      UserType INT NOT NULL,
+                      AddVAT INT,
+                      FOREIGN KEY (ChargeCode) REFERENCES Departments(ChargeCode),
+                      FOREIGN KEY (UserType) REFERENCES UserTypes(TypeID));	
+CREATE TABLE IF NOT EXISTS OrderHeader (
+                      OrderID INT NOT NULL PRIMARY KEY,
+                      Username TEXT NOT NULL,
+                      OrderDate TEXT NOT NULL CHECK (OrderDate is strftime('%Y-%m-%d %H:%M:%S', OrderDate)),
+                      FOREIGN KEY (Username) REFERENCES Users(Username));
+CREATE TABLE IF NOT EXISTS OrderLine (
+                      OrderID INT NOT NULL,
+                      OrderLineNo INT NOT NULL,
+                      ProdCode TEXT NOT NULL,
+                      Quantity INT NOT NULL,
+                      LineCost DECIMAL NOT NULL,
+                      PRIMARY KEY (OrderID, OrderLineNo),
+                      FOREIGN KEY (OrderID) REFERENCES OrderHeader(OrderID),
+                      FOREIGN KEY (ProdCode) REFERENCES Product(ProdCode));
